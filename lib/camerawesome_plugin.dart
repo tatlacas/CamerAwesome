@@ -354,8 +354,16 @@ class CamerawesomePlugin {
   }
 
   /// change capture mode between [CaptureMode.photo] and [CaptureMode.video]
-  static Future<void> setCaptureMode(CaptureMode captureMode) {
-    return CameraInterface().setCaptureMode(captureMode.name.toUpperCase());
+  static Future<void> setCaptureMode(CaptureMode captureMode) async {
+    try {
+      await CameraInterface().setCaptureMode(captureMode.name.toUpperCase());
+    } on PlatformException catch (e) {
+      if (e.code == 'VIDEO_ERROR' &&
+          e.message == 'error when trying to setup audio') {
+        return;
+      }
+      rethrow;
+    }
   }
 
   /// enable audio mode recording or not
